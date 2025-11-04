@@ -1,0 +1,62 @@
+services:
+  orchestrator:
+    build: ./orchestator
+    ports:
+      - "5000:5000"
+    environment:
+      - Local=host.docker.internal
+    depends_on:
+      - patient_validation
+      - doctor_assignment
+      - operating_room
+      - anesthesia
+      - lab_tests
+      - pharmacy
+      - blood_bank
+      - postop_room
+      - nurse
+
+  patient_validation:
+    build: ./patient-validation
+    ports:
+      - "5001:5001"
+
+  doctor_assignment:
+    build: ./doctor-asign
+    ports:
+      - "5002:5002"
+
+  operating_room:
+    build: ./room-asign
+    ports:
+      - "5003:5003"
+
+  anesthesia:
+    build: ./thesia-asign
+    ports:
+      - "5004:5004"
+
+  lab_tests:
+    build: ./labs-results
+    ports:
+      - "5005:5005"
+
+  pharmacy:
+    build: ./medicine
+    ports:
+      - "5006:5006"
+
+  blood_bank:
+    build: ./bloods
+    ports:
+      - "5007:5007"
+
+  nurse:
+    build: ./nurse
+    ports:
+      - "5008:5008"
+
+  postop_room:
+    build: ./postroom
+    ports:
+      - "5009:5009"
