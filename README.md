@@ -31,7 +31,7 @@ The service is composed of a list of patients (in-memory database) that will be 
 
 ---
 
-## **POST** `/validate`
+#### **POST** `/validate`
 
 Request used to validate certain patient data.  
 To perform this operation, the request body must include the patient's ID as `patient_id`.
@@ -46,7 +46,7 @@ If all three conditions are met, the patient ID is added to a list of successful
 
 ---
 
-## **POST** `/cancel-validation`
+#### **POST** `/cancel-validation`
 
 Request used to remove the patient ID from the list of successful validations, if the patient ID exists in that list.  
 To perform this operation, the request body must include the patient's ID as `patient_id`.
@@ -56,7 +56,7 @@ If it does, it is removed. Otherwise, the user is notified that there is no acti
 
 ---
 
-## **GET** `/health`
+#### **GET** `/health`
 Request used to check the patient’s health status.
 
 ## END patient-validation 
