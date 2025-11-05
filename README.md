@@ -391,4 +391,115 @@ Simple endpoint for checking service health.
 
 <!-- Fin anesthesia Service -->
 
+---
 
+# Bloods
+
+This service manages the reservation and cancellation of blood units for patients who require transfusions during surgery. It also maintains an inventory of blood types and available units, as well as a temporary record of active reserves.
+
+## Endpoints
+
+
+### **POST** `/reserve`
+
+Reserve blood units for a specific patient.
+
+- Requires the fields `patient_id`, `blood_type`, and `blood_units` in the request body.
+- Normalizes the blood type and validates its existence in the inventory.
+- Verifies that there are enough units available for the requested type.
+- If the conditions are met, deducts the units from the inventory and saves the reservation associated with the patient.
+
+**Expected Response:**
+
+`200`
+```json
+{
+  "patient_id": "123",
+  "status": "reserved",
+  "message": "Reservadas 2 unidades de sangre tipo O+"
+}
+```
+
+`400`
+```json
+{
+  "patient_id": "123",
+  "status": "not_available",
+  "message": "No hay suficientes unidades (1 disponibles, 3 requeridas)"
+}
+```
+
+`400`
+```json
+{
+  "status": "error",
+  "message": "Datos incompletos"
+}
+```
+
+`404`
+```json
+{
+  "patient_id:": "123",
+  "status": "error",
+  "message": "Tipo de sangre ABX no disponible"
+}
+```
+
+---
+
+### **POST** `/cancel`
+
+Cancel a previously made blood reservation.
+
+- Requires `patient_id` in the request body.
+- Checks if there is an active reservation for that patient.
+- If found, restores the units to inventory and deletes the reservation record.
+- If not found, returns an error message.
+
+
+**Expected Response:**
+
+`200`
+```json
+{
+  "patient_id": "123",
+  "status": "canceled",
+  "message": "Reserva cancelada y 2 unidades devueltas al inventario (O+)"
+}
+```
+
+`404`
+```json
+{
+  "status": "error",
+  "message": "No hay reserva previa para este paciente"
+}
+```
+
+---
+
+
+### **GET** `/health`
+
+Simple endpoint to check the service status.
+
+**Expected Response:**
+`200`
+```json
+{
+  "status": "ok",
+  "service": "blood-bank"
+}
+```
+---
+
+## Summary
+
+| Endpoint    | Method | Descripción                                      |
+|-------------|--------|--------------------------------------------------|
+| `/reserve`  | POST   | Reserve blood units for a patient                |
+| `/cancel`   | POST   | Cancel a reservation and return units to stock   |
+| `/health`   | GET    | Check service status                             |
+
+---
