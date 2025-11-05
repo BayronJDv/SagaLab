@@ -182,6 +182,146 @@ Simple endpoint for service health checks.
 
 <!-- Fin medicine Service -->
 
+<!-- Inicio nursing Service -->
+
+# Nursing Service
+
+This service manages the assignment of available nurses to patients based on shift requirements.
+
+## Endpoints
+
+---
+
+### **POST** `/assign`
+
+Assigns an available nurse to a patient for a specific shift.
+
+**Logic:**
+- Requires `patient_id` and optionally `shift` (defaults to "morning") in the request body.
+- Checks for available nurses in the specified shift.
+- If available, assigns the first nurse and removes them from the available list.
+- If not available, returns an error message.
+
+**Example Request:**
+
+curl -X POST localhost:5008/assign \
+  -H "Content-Type: application/json" \
+  -d '{"patient_id": "123", "shift": "morning"}'
+
+**Expected Responses:**
+
+`200 OK`
+```json
+{
+  "message": "Nurse Ana assigned to patient 123 for morning shift",
+  "assignment": {
+    "patient_id": "123",
+    "nurse": "Ana",
+    "shift": "morning"
+  }
+}
+```
+
+`400 Bad Request`
+```json
+{
+  "message": "Missing patient_id"
+}
+```
+
+**or**
+```json
+{
+  "message": "No nurses available for morning shift"
+}
+```
+
+---
+
+### **POST** `/cancel`
+
+Cancels an existing nurse assignment for a given patient.
+
+**Logic:**
+- Requires `patient_id` in the request body.
+- Searches for the patient's active assignment.
+- If found, removes it and restores the nurse to the available list.
+- If not found, returns an informative message.
+
+**Example Request:**
+
+curl -X POST localhost:5008/cancel \
+  -H "Content-Type: application/json" \
+  -d '{"patient_id": "123"}'
+
+**Expected Responses:**
+
+`200 OK`
+```json
+{
+  "message": "Assignment for patient 123 rolled back",
+  "restored_nurse": "Ana"
+}
+```
+
+`400 Bad Request`
+```json
+{
+  "message": "Missing patient_id"
+}
+```
+
+`404 Not Found`
+```json
+{
+  "message": "No assignment found for patient 123"
+}
+```
+
+---
+
+### **GET** `/health`
+
+Simple endpoint to check the service status.
+
+**Purpose:**
+- Confirms that the service is running and operational.
+
+**Expected Response:**
+```json
+{
+  "status": "ok",
+  "service": "nursing"
+}
+```
+
+---
+
+## Summary
+
+| Endpoint  | Method | Description                                    |
+|-----------|--------|------------------------------------------------|
+| /assign   | POST   | Assigns a nurse to a patient for a given shift |
+| /cancel   | POST   | Cancels a nurse–patient assignment             |
+| /health   | GET    | Health/heartbeat check                         |
+
+---
+
+## Notes
+
+- Uses an in-memory database of nurses per shift.
+- Automatically updates nurse availability after each assignment or cancellation.
+- Provides clear and consistent success/error messages.
+- Designed for integration within a Saga pattern for surgery scheduling systems.
+
+## Available Shifts
+
+- `morning` - Morning shift (Ana, Carlos)
+- `evening` - Evening shift (Beatriz, David)
+- `night` - Night shift (Elena)
+
+<!-- Fin nursing Service -->
+
 <!-- Inicio anesthesia Service -->
 
 # Anesthesia Service
