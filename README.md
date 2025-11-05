@@ -503,3 +503,74 @@ Simple endpoint to check the service status.
 | `/health`   | GET    | Check service status                             |
 
 ---
+<!-- Inicio Operating Room Service -->
+
+# 🏥 Operating Room Service
+
+This service manages the **assignment and cancellation of operating rooms** for surgeries, based on the surgery type and daily room availability.
+
+---
+
+## 🚀 Endpoints
+
+### **POST** `/reserve`
+
+Assigns an available operating room to a patient based on the surgery type and requested day.
+
+#### 🧠 Logic:
+- Validates the presence of `patient_id`, `surgery_type`, and `surgery_day`.
+- Searches for a room matching the given specialty (surgery type) with available usage slots on that day.
+- Each room has a limited capacity (`MAX_USAGE_PER_DAY`) that cannot be exceeded.
+- If a room is available, it is assigned to the patient and its usage for that day is incremented.
+- If no room is available, a conflict message is returned.
+
+#### ✅ Expected Response:
+- Success message confirming the assigned room.  
+- On error, returns a message indicating missing data or unavailability.
+
+---
+
+### **POST** `/cancel`
+
+Cancels an existing room reservation for a specific patient.
+
+#### 🧠 Logic:
+- Validates the presence of `patient_id`.
+- Searches for an active reservation linked to that patient.
+- If found, the reservation is removed, and the room usage count for that day is decreased.
+- If no active reservation is found, a not found message is returned.
+
+#### ✅ Expected Response:
+- Confirmation message of cancellation.  
+- Informative error message when no active reservation exists.
+
+---
+
+### **GET** `/health`
+
+Simple endpoint for checking service health.
+
+#### 🎯 Purpose:
+- Confirms that the service is running and operational.
+
+---
+
+## 📋 Summary
+
+| Endpoint    | Method | Description |
+|--------------|--------|-------------|
+| `/reserve`   | POST   | Assigns an operating room to a patient |
+| `/cancel`    | POST   | Cancels an existing operating room reservation |
+| `/health`    | GET    | Health/heartbeat check |
+
+---
+
+## 🧾 Notes
+
+- Uses an **in-memory database** of operating rooms with their specialties and daily usage.  
+- Prevents overbooking by limiting each room’s daily usage with `MAX_USAGE_PER_DAY`.  
+- Provides **clear success and error messages** for all operations.  
+- Suitable for integration with **hospital scheduling systems** or **surgery management services**.  
+- Runs by default on port **5003**.
+
+---
