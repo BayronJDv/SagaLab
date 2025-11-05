@@ -118,3 +118,73 @@ Simple endpoint for service health checks.
 <!-- Fin doctor-assign Service -->
 
 
+<!-- Inicio anesthesia Service -->
+
+# Anesthesia Service
+
+This service manages the assignment and cancellation of anesthesiologists for surgeries, based on their type of anesthesia and daily availability.
+
+## Endpoints
+
+---
+
+### **POST** `/assign`
+
+Assigns an available anesthesiologist to a patient based on the required anesthesia type and surgery day.
+
+**Logic:**
+- Validates the presence of `patient_id`, `anesthesia_type`, and `surgery_day`.
+- Searches for an anesthesiologist who can perform the specified type of anesthesia and is available on the given day.
+- If found, marks the anesthesiologist as unavailable for that day and saves the assignment.
+- If no anesthesiologist matches the conditions, a conflict message is returned.
+
+**Expected Response:**
+- Success message confirming the assigned anesthesiologist.
+- On error, returns a message indicating missing data or unavailability.
+
+---
+
+### **POST** `/cancel`
+
+Cancels an existing anesthesiologist assignment for a specific patient.
+
+**Logic:**
+- Validates the presence of `patient_id`.
+- Searches for an active assignment linked to that patient.
+- If found, removes the assignment and restores the anesthesiologist’s availability for that day.
+- If no assignment exists, returns a not found message.
+
+**Expected Response:**
+- Confirmation message of cancellation.
+- Informative error message when no active assignment is found.
+
+---
+
+### **GET** `/health`
+
+Simple endpoint for checking service health.
+
+**Purpose:**
+- Confirms that the service is running and operational.
+
+---
+
+## Summary
+
+| Endpoint    | Method | Description |
+|--------------|--------|-------------|
+| `/assign`    | POST   | Assigns an anesthesiologist to a patient |
+| `/cancel`    | POST   | Cancels an existing anesthesiologist assignment |
+| `/health`    | GET    | Health/heartbeat check |
+
+---
+
+## Notes
+- Uses an in-memory database of anesthesiologists with their skills and availability.  
+- Prevents assigning the same anesthesiologist twice on the same day.  
+- Provides clear and consistent messages for both success and error cases.  
+- Suitable for integration with surgery scheduling systems or hospital management services.
+
+<!-- Fin anesthesia Service -->
+
+
